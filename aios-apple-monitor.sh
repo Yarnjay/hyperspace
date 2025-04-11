@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AIOS_KERNEL="/Applications/Hyperspace.app/Contents/MacOS/Hyperspace"
+#AIOS_KERNEL="/Applications/Hyperspace.app/Contents/MacOS/Hyperspace"
 APP_LOG_FILE="/tmp/aios/aios-Hyperspace.log"
 MONITOR_LOG_FILE="/tmp/aios/aios-monitor.log"
 SCRIPT_NAME=$(basename $(readlink -f $0 2>/dev/null || echo $0))
@@ -107,14 +107,14 @@ function start_monitor() {
 
         # 用于判断日志是否一直卡住，若卡住也判断为断连了
         if [[ "$last_log_time_unix" == "error" ]] ; then
-          if [ "$last_error_time" == "0" ]; then
-            last_error_time=$current_time
+          if [ "$LAST_ERROR_TIME" == "0" ]; then
+            LAST_ERROR_TIME=$current_time
           fi
-          last_log_time_unix=$last_error_time
+          last_log_time_unix=$LAST_ERROR_TIME
 #          echo "$(date "+%Y-%m-%d %H:%M:%S"):  出错了，出错时间[ $(date -r $last_log_time_unix +"%Y-%m-%d %H:%M:%S") ]" >> $MONITOR_LOG_FILE
         else
           # 重置出错标志的时间
-          last_error_time=0
+          LAST_ERROR_TIME=0
           # 转成 +8 的时间
           last_log_time_unix=$(( last_log_time_unix + 8*60*60 ))
         fi
@@ -125,7 +125,7 @@ function start_monitor() {
         echo "$(date "+%Y-%m-%d %H:%M:%S"):获取到的最后日志时间[$last_log_time_str] +8 [$(date -r $last_log_time_unix +"%Y-%m-%d %H:%M:%S" )]  时间差=[$time_difference]秒" >> $MONITOR_LOG_FILE
 
         if [ $time_difference -gt $MIN_RESTART_INTERVAL ]; then
-            last_error_time=0
+            LAST_ERROR_TIME=0
             start_aios
             echo "$(date "+%Y-%m-%d %H:%M:%S"):  重新启动，[$(date -r ${current_time} +"%Y-%m-%d %H:%M:%S")]-[$(date -r ${last_log_time_unix} +"%Y-%m-%d %H:%M:%S")]=${time_difference}" >> $MONITOR_LOG_FILE
         fi
