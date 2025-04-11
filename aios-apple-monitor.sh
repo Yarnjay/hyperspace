@@ -78,7 +78,7 @@ function start_monitor() {
         fi
 
         # 定义错误模式
-        error_patterns="Endpoint request timed out|Internal server error|Last pong received.*Sending reconnect signal|Failed to authenticate|Failed to connect to Hive"
+        error_patterns="Endpoint request timed out|Internal server error|Error while reconnecting|Last pong received.*Sending reconnect signal|Failed to authenticate|Failed to connect to Hive|Another instance is already running"
 
         # 获取日志文件最后 4 行
         last_log=$(tail -n 4 "$APP_LOG_FILE")
